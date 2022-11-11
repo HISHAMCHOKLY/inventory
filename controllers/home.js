@@ -11,9 +11,13 @@ exports.getAddItem=(req,res)=>{
 }
 exports.addItem=async(req,res)=>{
     let {productid,productname,itemid,employeename}=req.body
+    let offset=+5.5 //india time zone code this code get from (https://timezonedb.com/time-zones)
     var date = new Date();
-    var current_date = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+ date.getDate();
-    var current_time = date.getHours()+":"+date.getMinutes()+":"+ date.getSeconds();
+    var utc=date.getTime()+(date.getTimezoneOffset()*60000)
+    var nd=new Date(utc+(3600000*offset))
+    let today=nd.toLocaleString().split(',')
+    var current_date = today[0]
+    var current_time = today[1]
     await History.create({id:Date.now(),productId:productid,productName:productname,itemId:itemid,employeeName:employeename,date:current_date,time:current_time})
     let product=await Inventory.findOne({productId:productid})
     if(product){
